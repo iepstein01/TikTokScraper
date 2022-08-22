@@ -1,4 +1,4 @@
-from tiktok_login import login
+from Archive.tiktok_login import login
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options

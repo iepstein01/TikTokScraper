@@ -1,6 +1,6 @@
 from tiktok_scraper import create_chrome_driver
-from tiktok_login import login
-from tiktok_video_interactions import like_video, next_video
+from Archive.tiktok_login import login
+from Archive.tiktok_video_interactions import like_video, next_video
 
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.service import Service
@@ -14,7 +14,7 @@ from fake_useragent import UserAgent, FakeUserAgentError
 import numpy
 import time
 
-
+# Gets and returns tags associated with the current video
 def relevant_tags(driver):
     # wait until comment section is loaded
     WebDriverWait(driver, timeout=60).until(
