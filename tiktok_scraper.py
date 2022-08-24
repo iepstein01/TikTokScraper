@@ -1,4 +1,3 @@
-from Archive.tiktok_login import login
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
@@ -19,6 +18,7 @@ import time
 class TikTok_Scraper:
     def __init__(self) -> None:
         # TODO: deal with this later
+        self.root_video_url = ""
         self.user_data_dir = ""
         self.profile_dir = ""
 
@@ -53,40 +53,40 @@ class TikTok_Scraper:
     def go_to_tiktok(self):
         self.driver.get("https://www.tiktok.com")
 
-    def login(self, driver, username, password) -> bool:
+    def login(self, username, password) -> bool:
         login_successful = False
 
-        WebDriverWait(driver=driver, timeout=60).until(
+        WebDriverWait(driver=self.driver, timeout=60).until(
             EC.element_to_be_clickable(
                 (By.XPATH, '//*[@id="app"]/div[1]/div/div[2]/button')
             )
         ).click()
         time.sleep(2)
-        WebDriverWait(driver=driver, timeout=60).until(
+        WebDriverWait(driver=self.driver, timeout=60).until(
             EC.element_to_be_clickable(
                 (By.XPATH, '//*[@id="loginContainer"]/div/div/a[2]')
             )
         ).click()
         time.sleep(2)
-        WebDriverWait(driver=driver, timeout=60).until(
+        WebDriverWait(driver=self.driver, timeout=60).until(
             EC.element_to_be_clickable(
                 (By.XPATH, '//*[@id="loginContainer"]/div/form/div[2]/a')
             )
         ).click()
         time.sleep(2)
-        WebDriverWait(driver=driver, timeout=60).until(
+        WebDriverWait(driver=self.driver, timeout=60).until(
             EC.presence_of_element_located(
                 (By.XPATH, '//*[@id="loginContainer"]/div/form/div[1]/input')
             )
         ).send_keys(username)
         time.sleep(2)
-        WebDriverWait(driver=driver, timeout=60).until(
+        WebDriverWait(driver=self.driver, timeout=60).until(
             EC.presence_of_element_located(
                 (By.XPATH, '//*[@id="loginContainer"]/div/form/div[2]/div/input')
             )
         ).send_keys(password)
         time.sleep(2)
-        WebDriverWait(driver=driver, timeout=60).until(
+        WebDriverWait(driver=self.driver, timeout=60).until(
             EC.element_to_be_clickable(
                 (By.XPATH, '//*[@id="loginContainer"]/div/form/button')
             )
@@ -144,9 +144,8 @@ class TikTok_Scraper:
         ).click()
 
     # Returns url of first video clicked
-    def get_first_vid_url(self):
-        self.click_first_video()
-        return self.driver.current_url
+    def get_root_vid_url(self):
+        self.root_video_url
 
     # Click on first post to enter mobile like viewing state
     def click_first_video(self):
@@ -158,6 +157,15 @@ class TikTok_Scraper:
                 )
             )
         ).click()
+        WebDriverWait(self.driver, 60).until(
+            EC.element_to_be_clickable(
+                (
+                    By.XPATH,
+                    '//*[@id="app"]/div[2]/div[3]/div[2]/div[2]/div[2]/div[1]/div[1]/button[1]',
+                )
+            )
+        )
+        self.root_video_url = self.driver.current_url
 
     # Gets and returns tags associated with the current video
     def get_current_video_tags(driver):
@@ -182,13 +190,13 @@ class TikTok_Scraper:
                 tags.append(tag)
 
         return tags
-    
+
     def watch_n_minutes(low, high):
         return np.random.randint(low=low, high=high)
 
     def watch_n_videos(self, n, user, tags):
         for i in range(n):
-            watch_or_skip = watch_or_skip(self.driver, user, tags):
+            watch_or_skip = watch_or_skip(self.driver, user, tags)
             if watch_or_skip:
                 pass
             time.sleep(5)
@@ -196,17 +204,17 @@ class TikTok_Scraper:
 
     def get_video_length(driver):
         video_length = str(
-                WebDriverWait(driver=driver, timeout=60)
-                .until(
-                    EC.presence_of_element_located(
-                        (
-                            By.XPATH,
-                            '//*[@id="app"]/div[2]/div[3]/div[1]/div[2]/div[2]/div[2]',
-                        )
+            WebDriverWait(driver=driver, timeout=60)
+            .until(
+                EC.presence_of_element_located(
+                    (
+                        By.XPATH,
+                        '//*[@id="app"]/div[2]/div[3]/div[1]/div[2]/div[2]/div[2]',
                     )
                 )
-                .get_attribute("innerHTML")
             )
+            .get_attribute("innerHTML")
+        )
         video_length = video_length[video_length.index("/") + 1 : len(video_length)]
         if video_length[0:1] == "0":
             video_length = video_length[1 : len(video_length)]
@@ -215,7 +223,8 @@ class TikTok_Scraper:
         video_length_in_seconds = int(video_minutes) * 60 + int(video_seconds)
         return video_length_in_seconds
 
-    def watch_or_skip(driver, user, tags):
+    # TODO: do something with this
+    def watch_or_skip(self, user, tags):
         is_of_interest = False
         for interest in user.get_interests():
             for tag in tags:

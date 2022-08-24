@@ -33,13 +33,13 @@ def login(driver) -> bool:
         EC.presence_of_element_located(
             (By.XPATH, '//*[@id="loginContainer"]/div/form/div[1]/input')
         )
-    ).send_keys("itainepstein@gmail.com")
+    ).send_keys("")
     time.sleep(2)
     WebDriverWait(driver=driver, timeout=60).until(
         EC.presence_of_element_located(
             (By.XPATH, '//*[@id="loginContainer"]/div/form/div[2]/div/input')
         )
-    ).send_keys("ybw-meb6RYC*xwr2dnb")
+    ).send_keys("")
     time.sleep(2)
     WebDriverWait(driver=driver, timeout=60).until(
         EC.element_to_be_clickable(
