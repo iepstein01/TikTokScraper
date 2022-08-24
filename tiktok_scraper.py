@@ -223,7 +223,7 @@ class TikTok_Scraper:
         video_length_in_seconds = int(video_minutes) * 60 + int(video_seconds)
         return video_length_in_seconds
 
-    # TODO: do something with this
+    # TODO: store in dictionary and just check if it contains it
     def watch_or_skip(self, user, tags):
         is_of_interest = False
         for interest in user.get_interests():
